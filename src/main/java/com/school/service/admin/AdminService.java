@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import com.school.dto.FeeDto;
 import com.school.dto.SingleStudentDto;
 import com.school.dto.StudentDto;
+import com.school.dto.StudentLeaveDto;
+import com.school.dto.TeacherDto;
 
 public interface AdminService {
 
@@ -21,5 +23,13 @@ public interface AdminService {
 	StudentDto updateStudent(int studentId, StudentDto dto);
 
 	FeeDto payFee(int studentId, FeeDto dto);
+
+	List<StudentLeaveDto> getAllApplyLeaves();
+
+	StudentLeaveDto changeLeaveStatus(int leaveId, String status);
+
+	TeacherDto postTeacher(TeacherDto dto);
+
+	List<TeacherDto> getAllTeachers();
 
 }

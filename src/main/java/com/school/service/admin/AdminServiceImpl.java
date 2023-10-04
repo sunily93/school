@@ -2,6 +2,7 @@ package com.school.service.admin;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -15,10 +16,17 @@ import org.springframework.stereotype.Service;
 import com.school.dto.FeeDto;
 import com.school.dto.SingleStudentDto;
 import com.school.dto.StudentDto;
+import com.school.dto.StudentLeaveDto;
+import com.school.dto.TeacherDto;
 import com.school.entity.Fee;
+import com.school.entity.StudentLeave;
+import com.school.entity.Teacher;
 import com.school.entity.User;
+import com.school.enums.StudentLeaveStatus;
 import com.school.enums.UserRole;
 import com.school.repository.FeeRepository;
+import com.school.repository.StudentLeaveRepository;
+import com.school.repository.TeacherRepository;
 import com.school.repository.UserRepository;
 
 @Service
@@ -26,6 +34,12 @@ public class AdminServiceImpl implements AdminService{
 
 	@Autowired
 	private UserRepository repository;
+	
+	@Autowired
+	private TeacherRepository teacherRepo;
+	
+	@Autowired
+	private StudentLeaveRepository leaveRepo;
 	
 	@Autowired
 	private FeeRepository feeRepository;
@@ -142,5 +156,46 @@ public class AdminServiceImpl implements AdminService{
 			return feeDto;
 		}
 		return null;
+	}
+
+	@Override
+	public List<StudentLeaveDto> getAllApplyLeaves() {
+		return leaveRepo.findAll().stream().map(StudentLeave::getStudentLeaveDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public StudentLeaveDto changeLeaveStatus(int leaveId, String status) {
+		Optional<StudentLeave> findById = leaveRepo.findById(leaveId);
+		if(findById.isPresent())
+		{
+			StudentLeave studentLeave = findById.get();
+			if(Objects.equals(status, "Approve"))
+			{
+				studentLeave.setStudentLeaveStatus(StudentLeaveStatus.Approve);
+			}else {
+				studentLeave.setStudentLeaveStatus(StudentLeaveStatus.Disapprove);
+			}
+			StudentLeave save = leaveRepo.save(studentLeave);
+			StudentLeaveDto leaveDto = new StudentLeaveDto();
+			leaveDto.setId(save.getId());
+			return leaveDto;
+		}
+		return null;
+	}
+
+	//Teacher Operations
+	@Override
+	public TeacherDto postTeacher(TeacherDto dto) {
+		Teacher teacher=new Teacher();
+		BeanUtils.copyProperties(dto, teacher);
+		Teacher save = teacherRepo.save(teacher);
+		TeacherDto teacherDto = new TeacherDto();
+		teacherDto.setId(save.getId());
+		return teacherDto;
+	}
+
+	@Override
+	public List<TeacherDto> getAllTeachers() {
+		return teacherRepo.findAll().stream().map(Teacher::getTeacherDto).collect(Collectors.toList());
 	}
 }

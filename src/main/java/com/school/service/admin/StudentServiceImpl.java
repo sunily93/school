@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.school.dto.SingleStudentDto;
+import com.school.dto.StudentDto;
 import com.school.dto.StudentLeaveDto;
 import com.school.entity.StudentLeave;
 import com.school.entity.User;
@@ -56,5 +57,27 @@ public class StudentServiceImpl implements StudentService{
 	public List<StudentLeaveDto> getAllApplyLeaveStudentById(int studentId) {
 		
 		return leaveRepo.findAllByUserId(studentId).stream().map(StudentLeave::getStudentLeaveDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public StudentDto updateStudent(int studentId, StudentDto dto) {
+		Optional<User> findById = repository.findById(studentId);
+		if(findById.isPresent())
+		{
+			User user = findById.get();
+			user.setName(dto.getName());
+			user.setGander(dto.getGander());
+			user.setAddress(dto.getAddress());
+			user.setDob(dto.getDob());
+			user.setEmail(dto.getEmail());
+			user.setFatherName(dto.getFatherName());
+			user.setMotherName(dto.getMotherName());
+			user.setStudentClass(dto.getStudentClass());
+			User upateSutudent = repository.save(user);
+			StudentDto studentDto=new StudentDto();
+			studentDto.setId(upateSutudent.getId());
+			return studentDto;
+		}
+		return null;
 	}
 }

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.school.dto.FeeDto;
 import com.school.dto.SingleStudentDto;
 import com.school.dto.StudentDto;
+import com.school.dto.StudentLeaveDto;
+import com.school.dto.TeacherDto;
 import com.school.service.admin.AdminService;
 
 @RestController
@@ -78,5 +80,41 @@ public class AdminController {
 		if(feeDto==null)
 			return new ResponseEntity<>("Something went wrong..",HttpStatus.BAD_REQUEST);
 		return ResponseEntity.status(HttpStatus.CREATED).body(feeDto);
+	}
+	
+	@GetMapping("/leaves")
+	public ResponseEntity<List<StudentLeaveDto>> getAllApplyLeave()
+	{
+		List<StudentLeaveDto> dto=service.getAllApplyLeaves();
+		if(dto==null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(dto);
+	}
+	
+	@GetMapping("/leave/{leaveId}/{status}")
+	public ResponseEntity<?> changeLeaveStatus(@PathVariable int leaveId,@PathVariable String status)
+	{
+		StudentLeaveDto dto=service.changeLeaveStatus(leaveId,status);
+		if(dto==null)
+			return new ResponseEntity<>("Something went wrong ",HttpStatus.BAD_REQUEST);
+		return ResponseEntity.ok(dto);
+	}
+	
+	//Teacher Operations
+	@PostMapping("/teacher")
+	public ResponseEntity<?> postTeacher(@RequestBody TeacherDto dto)
+	{
+		TeacherDto teacherDto=service.postTeacher(dto);
+		System.out.println(teacherDto.getName());
+		if(teacherDto==null)
+			return new ResponseEntity<>("Something went wrong..",HttpStatus.BAD_REQUEST);
+		return ResponseEntity.status(HttpStatus.CREATED).body(teacherDto);
+	}
+	
+	@GetMapping("/teachers")
+	public ResponseEntity<List<TeacherDto>> getAllTeachers()
+	{
+		List<TeacherDto> teacherDtos=service.getAllTeachers();
+		return ResponseEntity.ok(teacherDtos);
 	}
 }
